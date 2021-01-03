@@ -12,8 +12,7 @@
     <header class="container bg-secondary text-center" id="navbarHeader">
       <h1>Pokemon</h1>
     </header>
-    <div class="container row" id="lista">
-
+    <div class="container row bg-secondary" id="lista">
     </div>
   </div>
 
@@ -25,13 +24,51 @@
     integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
     crossorigin="anonymous"></script>
-    <script>
-      $(document).ready(function(){
-        for(pokemon = 1; pokemon <= 151; pokemon++){
-          $("#lista").append(`<div class="col-3"><img src=http://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${pokemon}.png alt=''></div>`)
-        }
-      })
-    </script>
+  <script>
+    $(document).ready(function () {
+      for (pokemon = 1; pokemon <= 151; pokemon++) {
+        $("#lista").append(`<div class="col-3 text-center mt-5"><div  class="touch border border-secondary bg-secondary" id="${pokemon}" style="height: 96px; width: 96px;"><img src=http://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${pokemon}.png alt=''></div></div>`)
+      }
+      $(".touch").hover(
+        function () {
+          $(this).addClass('shadow-lg bg-white rounded-circle');
+        },
+        function () {
+          $(this).removeClass('shadow-lg bg-white rounded-circle');
+        });
+      $(".touch").on("click", function () {
+        var name = "";
+        $(this).addClass("bg-light");
+        $('.erase').remove();
+        var id = $(this).prop("id");
+        var name = "";
+        $.get("https://pokeapi.co/api/v2/pokemon/" + id + "/", function (res) {
+          name = res.name;
+          $("#lista").prepend(`<div class="col-12 border border-3 erase sticky-top bg-light text-center align-middle mt-5">
+            <h2 id="nombre">Nombre: ${name.toUpperCase()}</h2>
+            <div  class="mx-auto erase border border-secondary bg-light" id="${pokemon}" 
+            style="height: 96px; width: 96px;"><img src=http://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${id}.png alt=''></div>
+            <ul class="mx-auto lista erase">
+            </ul>
+            </div>`)
+          for (i = 0; i < res.types.length; i++) {
+            $(".lista").append("<h4  class='pt-3 blockquote'>Tipo: " + res.types[i].type.name + "</h4>");
+          }
+          $(".lista").append("<h4  class='pt-4 blockquote-footer'>Peso: " + res.weight + "</h4>");
+          $(".lista").append("<h4  class='p-2 blockquote-footer'>Altura: " + res.height + "</h4>");
+          $(".lista").append("<button type='button' class='boton'>Cerrar</button>");
+          $(document).on("click", ".boton", function () {
+            $("#"+id+"").removeClass("bg-light");
+            $(".erase").remove();
+            
+          })
+
+
+        });
+
+      });
+    })
+  </script>
 </body>
 
 </html>
